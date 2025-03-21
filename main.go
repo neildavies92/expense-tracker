@@ -6,16 +6,30 @@ import (
 	"os"
 )
 
-func main() {
-	file, err := os.OpenFile("expenses.txt", os.O_RDWR|os.O_CREATE, 0666)
+func CreateExpenseFile(filename string) {
+	expenseFile, err := os.OpenFile(filename, os.O_CREATE, 0666)
 	if err != nil {
 		log.Fatalf("File cannot be created: %v", err)
 	}
-	defer file.Close()
+	defer expenseFile.Close()
+	fmt.Println("File created successfully...")
+}
 
-	if _, err := os.Stat("expenses.txt"); os.IsNotExist(err) {
-		fmt.Println("File succesfully created.")
-	} else {
-		fmt.Println("Skipped creating... file already exists.")
+func WriteToFile(filename string, data string) {
+	expenseFile, err := os.OpenFile(filename, os.O_RDWR|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("File cannot be opened: %v", err)
 	}
+	defer expenseFile.Close()
+
+	_, err = expenseFile.WriteString(data)
+	if err != nil {
+		log.Fatalf("Data cannot be written to file: %v", err)
+	}
+	fmt.Println("Data written successfully...")
+}
+
+func main() {
+	CreateExpenseFile("expenses.txt")
+	WriteToFile("expenses.txt", "Hello World\n")
 }
