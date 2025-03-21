@@ -7,7 +7,7 @@ import (
 )
 
 func CreateExpenseFile(filename string) {
-	expenseFile, err := os.OpenFile(filename, os.O_CREATE, 0666)
+	expenseFile, err := os.OpenFile(filename, os.O_CREATE, 0644)
 	if err != nil {
 		log.Fatalf("File cannot be created: %v", err)
 	}
@@ -16,7 +16,7 @@ func CreateExpenseFile(filename string) {
 }
 
 func WriteToFile(filename string, data string) {
-	expenseFile, err := os.OpenFile(filename, os.O_RDWR|os.O_APPEND, 0666)
+	expenseFile, err := os.OpenFile(filename, os.O_RDWR|os.O_APPEND, 0644)
 	if err != nil {
 		log.Fatalf("File cannot be opened: %v", err)
 	}
