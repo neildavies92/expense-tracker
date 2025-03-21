@@ -1,2 +1,5 @@
 # expense-tracker
-SImple application for tracking expenses
+
+A simple roadmap.sh project application for tracking expenses
+
+https://roadmap.sh/projects/expense-tracker
