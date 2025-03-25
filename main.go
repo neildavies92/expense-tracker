@@ -7,11 +7,6 @@ import (
 	"os"
 )
 
-type Expense struct {
-	Name   string
-	Amount float64
-}
-
 func createCSV(filename string) (*csv.Writer, *os.File, error) {
 	expenseFile, err := os.Create(filename)
 	if err != nil {
