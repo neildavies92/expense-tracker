@@ -1,45 +1,57 @@
 package main
 
 import (
-	"bufio"
+	"encoding/csv"
 	"fmt"
 	"log"
 	"os"
 )
 
-func CreateExpenseFile(filename string) {
-	expenseFile, err := os.OpenFile(filename, os.O_CREATE, 0644)
+type Expense struct {
+	Name   string
+	Amount float64
+}
+
+func createCSV(filename string) (*csv.Writer, *os.File, error) {
+	expenseFile, err := os.Create(filename)
 	if err != nil {
 		log.Fatalf("File cannot be created: %v", err)
 	}
-	defer expenseFile.Close()
-	fmt.Println("File created successfully...")
+	writer := csv.NewWriter(expenseFile)
+	return writer, expenseFile, nil
 }
 
-func WriteToFile(filename string) {
-	expenseFile, err := os.OpenFile(filename, os.O_RDWR|os.O_APPEND, 0644)
+func writeToCSV(writer *csv.Writer, record []string) {
+	err := writer.Write(record)
 	if err != nil {
-		log.Fatalf("File cannot be opened: %v", err)
+		fmt.Println("Error writing record to CSV: %v", err)
 	}
-	defer expenseFile.Close()
-
-	welcome := "Welcome to the expense tracker!\n"
-	fmt.Println(welcome)
-
-	fmt.Println("Add a new expense name: ")
-	reader := bufio.NewReader(os.Stdin)
-
-	expense, _ := reader.ReadString('\n')
-
-	_, err = expenseFile.WriteString(expense)
-	if err != nil {
-		log.Fatalf("Data cannot be written to file: %v", err)
-	}
-	fmt.Println("New expense added to file...")
 }
 
 func main() {
-	file := "expenses.txt"
-	CreateExpenseFile(file)
-	WriteToFile(file)
+	filename := "test.csv"
+
+	writer, file, err := createCSV(filename)
+	if err != nil {
+		fmt.Println("Error creating CSV file: %v", err)
+		return
+	}
+	defer file.Close()
+
+	header := []string{"Expense", "Amount", "Due Date"}
+	writeToCSV(writer, header)
+
+	records := [][]string{
+		{"Rent", "1000", "1st"},
+		{"Car", "350", "1st"},
+	}
+
+	for _, record := range records {
+		writeToCSV(writer, record)
+	}
+
+	writer.Flush()
+	if err := writer.Error(); err != nil {
+		fmt.Println("Error flushing CSV writer: ", err)
+	}
 }
