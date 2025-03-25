@@ -1,32 +1,23 @@
 package main
 
 import (
-	"encoding/csv"
+	"bufio"
+	"expense-tracker/csv"
 	"fmt"
-	"log"
 	"os"
 )
 
-func createCSV(filename string) (*csv.Writer, *os.File, error) {
-	expenseFile, err := os.Create(filename)
-	if err != nil {
-		log.Fatalf("File cannot be created: %v", err)
-	}
-	writer := csv.NewWriter(expenseFile)
-	return writer, expenseFile, nil
-}
-
-func writeToCSV(writer *csv.Writer, record []string) {
-	err := writer.Write(record)
-	if err != nil {
-		fmt.Println("Error writing record to CSV: %v", err)
-	}
+func getUserInput(prompt string) string {
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Print(prompt)
+	scanner.Scan()
+	return scanner.Text()
 }
 
 func main() {
 	filename := "test.csv"
 
-	writer, file, err := createCSV(filename)
+	writer, file, err := csv.CreateCSV(filename)
 	if err != nil {
 		fmt.Println("Error creating CSV file: %v", err)
 		return
@@ -34,15 +25,18 @@ func main() {
 	defer file.Close()
 
 	header := []string{"Expense", "Amount", "Due Date"}
-	writeToCSV(writer, header)
+	csv.CreateCSVWriter(writer, header)
 
-	records := [][]string{
-		{"Rent", "1000", "1st"},
-		{"Car", "350", "1st"},
-	}
+	for {
+		expenseName := getUserInput("Enter name of expense (or type 'done' to finish): ")
+		if expenseName == "done" {
+			break
+		}
+		expenseValue := (getUserInput("Enter value of expense: "))
+		dueDate := getUserInput("Enter due date of expense: ")
 
-	for _, record := range records {
-		writeToCSV(writer, record)
+		record := []string{expenseName, expenseValue, dueDate}
+		csv.CreateCSVWriter(writer, record)
 	}
 
 	writer.Flush()
