@@ -19,13 +19,10 @@ func main() {
 
 	writer, file, err := csv.CreateCSV(filename)
 	if err != nil {
-		fmt.Println("Error creating CSV file: %v", err)
+		fmt.Printf("Error creating CSV file: %v\n", err)
 		return
 	}
 	defer file.Close()
-
-	header := []string{"Expense", "Amount", "Due Date"}
-	csv.CreateCSVWriter(writer, header)
 
 	for {
 		expenseName := getUserInput("Enter name of expense (or type 'done' to finish): ")
@@ -36,7 +33,7 @@ func main() {
 		dueDate := getUserInput("Enter due date of expense: ")
 
 		record := []string{expenseName, expenseValue, dueDate}
-		csv.CreateCSVWriter(writer, record)
+		csv.AppendExpenses(writer, record)
 	}
 
 	writer.Flush()
